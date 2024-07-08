@@ -1,0 +1,656 @@
+{% include 'product_tracking/head.html' %}
+
+{% block content %}
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container .select2-selection--single {
+            height: calc(3.5rem + 2px);
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 2.5rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .select2-container .select2-selection--single .select2-selection__clear {
+            position: absolute;
+            top: 50%;
+            right: 2.25rem;
+            transform: translateY(-50%);
+            color: #dc3545;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+            color: #e74c3c;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single {
+            height: 100%;
+            padding: 0.75rem 1rem;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding-left: 0.25rem;
+        }
+
+        .select2-dropdown {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .select2-results__option {
+            padding: 0.5rem 1rem;
+        }
+    </style>
+    <body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <!-- ========== App Menu ========== -->
+        {% include 'product_tracking/menu.html' %}
+        <!-- Left Sidebar End -->
+        <!-- Vertical Overlay-->
+        <div class="vertical-overlay"></div>
+        {% include 'product_tracking/header.html' %}
+        <div class="wrapper"></div>
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Production Order Creation</h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Production</a></li>
+                                        <li class="breadcrumb-item active">PO Creation</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Create Production Order</h4>
+                                </div><!-- end card header -->
+                                <div class="card-body">
+                                    <form id="productionOrderForm">
+                                        <div class="row g-3">
+                                            <input type="hidden" id="order-id">
+                                            <div class="col-lg-4">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="scan-product"
+                                                           placeholder="Scan Product barcode">
+                                                    <label for="scan-product">Scan Product</label>
+                                                </div>
+                                            </div>
+                                            <div><p> OR </p></div>
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="select-item">
+                                                        <!--<option selected>Select Item Code</option>-->
+                                                    </select>
+                                                    <label for="select-item">Item Code</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-floating">
+                                                    <input class="form-control" id="product-name"
+                                                           placeholder="Enter Item Name" readonly>
+                                                    <label for="product-name">Item Name</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="batch"
+                                                           placeholder="Enter Batch">
+                                                    <label for="batch">Item Batch</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <input type="number" class="form-control" id="mrp"
+                                                           placeholder="Enter MRP">
+                                                    <label for="mrp">Item MRP</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <input type="date" class="form-control" id="mfg-date">
+                                                    <label for="mfg-date">MFG Date</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <input type="date" class="form-control" id="exp-date">
+                                                    <label for="exp-date">EXP. Date</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <input type="number" class="form-control" id="qty"
+                                                           placeholder="Enter Quantity">
+                                                    <label for="qty">QTY</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <select class="form-control" id="line-no" name="line_no"
+                                                            aria-label="Select Line Number">
+                                                        <option value="">Select Production Line</option>
+                                                    </select>
+                                                    <label for="line-no">Line Number</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-floating">
+                                                    <input type="number" class="form-control" id="polybag-weight"
+                                                           placeholder="Enter Weight">
+                                                    <label for="polybag-weight">Polybag Weight</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-end" style="text-align: left !important;">
+                                                    <button type="submit" class="btn btn-primary">Add</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div><!--end col-->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Production Order List</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="production-order-list"
+                                               class="table table-bordered dt-responsive nowrap table-striped align-middle">
+                                            <thead style="background: rgba(155,198,221,0.58)">
+                                            <tr>
+                                                <th>Production Order Number</th>
+                                                <th>Product Code</th>
+                                                <th>Product Name</th>
+                                                <th>Product Batch</th>
+                                                <th>Product MRP</th>
+                                                <th>MFG Date</th>
+                                                <th>EXP Date</th>
+                                                <th>Product Line Number</th>
+                                                <th>Quantity</th>
+                                                <th>Polybag Weight</th>
+                                                <th>Added By</th>
+                                                <th>Added Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="production-order-list">
+                                            <!-- Rows will be dynamically populated -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div id="pagination-count" style="padding: 10px;">Showing 0 to 0 of 0 entries</div>
+                                <div style="padding-bottom: 10px;margin: 5px;">
+                                    <button id="prev-page-btn" class="btn btn-primary me-2">Previous</button>
+                                    <button id="next-page-btn" class="btn btn-primary">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Edit Production Order Modal -->
+                        <div class="modal fade" id="editProductionOrderModal" tabindex="-1"
+                             aria-labelledby="editProductionOrderModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editProductionOrderModalLabel">Edit Production
+                                            Order</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="editProductionOrderForm">
+                                            <input type="hidden" id="edit-production-order-number">
+                                            <div class="form-floating mb-3">
+                                                <select class="form-select" id="edit-select-item"
+                                                        aria-label="Select Item Code"></select>
+                                                <label for="edit-select-item">Item Code</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <textarea class="form-control" id="edit-product-name" rows="3"
+                                                          placeholder="Enter Item Name" readonly></textarea>
+                                                <label for="edit-product-name">Item Name</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="edit-batch"
+                                                       placeholder="Enter Batch">
+                                                <label for="edit-batch">Item Batch</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="number" class="form-control" id="edit-mrp"
+                                                       placeholder="Enter MRP">
+                                                <label for="edit-mrp">Item MRP</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="date" class="form-control" id="edit-mfg-date">
+                                                <label for="edit-mfg-date">MFG Date</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="date" class="form-control" id="edit-exp-date">
+                                                <label for="edit-exp-date">EXP Date</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="number" class="form-control" id="edit-qty"
+                                                       placeholder="Enter Quantity">
+                                                <label for="edit-qty">QTY</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <select class="form-select" id="edit-line-no"
+                                                        aria-label="Select Line Number"></select>
+                                                <label for="edit-line-no">Line Number</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="edit-polybag-weight"
+                                                       placeholder="Enter Weight">
+                                                <label for="edit-polybag-weight">Polybag Weight</label>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end row-->
+                </div> <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            {% include 'product_tracking/footer.html' %}
+        </div>
+        <!-- end main content-->
+    </div>
+    <!-- END layout-wrapper -->
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="status">
+            <div class="spinner-border text-primary avatar-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load jQuery first -->
+    <!-- Then load Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <!-- Load Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let currentPage = 1;
+            const pageSize = 10;
+            let totalItems = 0;
+
+            $('#select-item').select2({
+                width: '100%',
+                allowClear: true,
+            });
+
+            $('#edit-select-item').select2({
+                width: '100%',
+                allowClear: true,
+            });
+
+            function populateSelectItem() {
+                $.ajax({
+                    url: '/get_item_code/',
+                    type: 'GET',
+                    success: function (data) {
+                        var selectItem = $('#select-item');
+                        selectItem.empty();
+                        selectItem.append('<option></option>');
+                        data.forEach(function (item) {
+                            var option = '<option value="' + item.item_code + '" data-item-id="' + item.item_id + '" data-item-name="' + item.item_name + '">' + item.item_code + '</option>';
+                            selectItem.append(option);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching item codes:', error);
+                    }
+                });
+            }
+
+
+            function populateSelectLineNo() {
+                $.ajax({
+                    url: '/get_line_numbers/',
+                    type: 'GET',
+                    success: function (data) {
+                        var selectLineNo = $('#line-no');
+                        var editSelectLineNo = $('#edit-line-no');
+                        selectLineNo.empty();
+                        editSelectLineNo.empty();
+                        selectLineNo.append('<option></option>');
+                        editSelectLineNo.append('<option></option>');
+                        data.forEach(function (line) {
+                            var option = '<option value="' + line.line_no + '">' + line.line_no + '</option>';
+                            selectLineNo.append(option);
+                            editSelectLineNo.append(option);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching line numbers:', error);
+                    }
+                });
+            }
+
+            function populateProductionOrderList() {
+                $.ajax({
+                    url: '/get_production_order_list/',
+                    type: 'GET',
+                    success: function (data) {
+                        totalItems = data.length;
+                        const startIdx = (currentPage - 1) * pageSize;
+                        const endIdx = startIdx + pageSize;
+                        const ordersOnCurrentPage = data.slice(startIdx, endIdx);
+
+                        var tableBody = $('#production-order-list tbody');
+                        tableBody.empty();
+                        ordersOnCurrentPage.forEach(function (order) {
+                            var editButton = '<button class="btn btn-sm btn-primary" onclick="editOrder(\'' + order.production_order_number + '\')">Edit</button>';
+                            tableBody.append('<tr>' +
+                                '<td>' + order.production_order_number + '</td>' +
+                                '<td>' + order.item_code + '</td>' +
+                                '<td>' + order.product_name + '</td>' +
+                                '<td>' + order.batch + '</td>' +
+                                '<td>' + order.item_mrp + '</td>' +
+                                '<td>' + order.mfg_date + '</td>' +
+                                '<td>' + order.exp_date + '</td>' +
+                                '<td>' + order.line_no + '</td>' +
+                                '<td>' + order.qty + '</td>' +
+                                '<td>' + order.polybag_weight + ' Kg</td>' +
+                                '<td>' + order.added_by + '</td>' +
+                                '<td>' + order.added_date + '</td>' +
+                                '<td>' + editButton + '</td>' +
+                                '</tr>');
+                        });
+
+                        updatePaginationCount(totalItems);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching production order list:', error);
+                    }
+                });
+            }
+
+            function updatePaginationCount(totalItems) {
+                const totalPages = Math.ceil(totalItems / pageSize);
+                const startRange = (currentPage - 1) * pageSize + 1;
+                const endRange = Math.min(currentPage * pageSize, totalItems);
+
+                $('#pagination-count').text(`Showing ${startRange} to ${endRange} of ${totalItems} entries`);
+            }
+
+            $('#prev-page-btn').on('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    populateProductionOrderList();
+                }
+            });
+
+            $('#next-page-btn').on('click', function () {
+                const totalPages = Math.ceil(totalItems / pageSize);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    populateProductionOrderList();
+                }
+            });
+
+            $('#select-item').change(function () {
+                var selectedItem = $(this).find(':selected');
+                var itemName = selectedItem.data('item-name');
+                $('#product-name').val(itemName);
+            });
+
+            $('#edit-select-item').change(function () {
+                var selectedItem = $(this).find(':selected');
+                var itemName = selectedItem.data('item-name');
+                $('#edit-product-name').val(itemName);
+            });
+
+            $('#productionOrderForm').submit(function (e) {
+                e.preventDefault();
+
+                var formData = {
+                    'item_code': $('#select-item').val(),  // Ensure this is correct and exists in the backend database
+                    'batch': $('#batch').val(),
+                    'item_mrp': $('#mrp').val(),
+                    'mfg_date': $('#mfg-date').val(),
+                    'exp_date': $('#exp-date').val(),
+                    'qty': $('#qty').val(),
+                    'polybag_weight': $('#polybag-weight').val(),
+                    'line_no': $('#line-no').val(),
+                    'product_name': $('#product-name').val()
+                };
+
+                $.ajax({
+                    url: '/create_production_order/',
+                    type: 'POST',
+                    headers: {'X-CSRFToken': getCookie('csrftoken')},
+                    data: formData,
+                    success: function (response) {
+                        alert('Product Order added to Order List');
+                        populateProductionOrderList();
+                        $('#productionOrderForm')[0].reset();
+                        $('#select-item').val(null).trigger('change');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error adding item to temporary list:', error);
+                    }
+                });
+            });
+
+            // Function to get CSRF token from cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            window.editOrder = function (productionOrderNumber) {
+                var order = $('#production-order-list tbody tr').filter(function () {
+                    return $(this).find('td:first').text() == productionOrderNumber;
+                }).find('td');
+
+                $.ajax({
+                    url: '/check_polybag_status/',
+                    type: 'GET',
+                    data: {
+                        production_order_number: productionOrderNumber
+                    },
+                    success: function (response) {
+                        if (response.polybag_status) {
+                            alert('Cannot edit Production Order. Label Printing done for this Production Order Number.');
+                        } else {
+                            var itemCode = order.eq(1).text().trim();
+                            var itemName = order.eq(2).text().trim();
+
+                            $('#edit-production-order-number').val(productionOrderNumber);
+
+                            var newOption = new Option(itemCode, itemCode, true, true);
+                            $('#edit-select-item').empty().append(newOption).trigger('change');
+                            $('#edit-product-name').val(itemName);
+
+                            $('#edit-batch').val(order.eq(3).text());
+                            $('#edit-mrp').val(order.eq(4).text());
+                            $('#edit-mfg-date').val(order.eq(5).text());
+                            $('#edit-exp-date').val(order.eq(6).text());
+                            $('#edit-qty').val(order.eq(8).text());
+                            // Remove "Kg" suffix before setting the value
+                            var polybagWeight = order.eq(9).text().replace(' Kg', '');
+                            $('#edit-polybag-weight').val(polybagWeight);
+                            $('#edit-line-no').val(order.eq(7).text());
+
+                            $('#editProductionOrderModal').modal('show');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error checking polybag status:', error);
+                    }
+                });
+            };
+
+            $('#editProductionOrderForm').submit(function (e) {
+                e.preventDefault();
+
+                var formData = {
+                    'production_order_number': $('#edit-production-order-number').val(),
+                    'item_code': $('#edit-select-item').val(),  // Send item_code instead of item_id
+                    'batch': $('#edit-batch').val(),
+                    'item_mrp': $('#edit-mrp').val(),
+                    'mfg_date': $('#edit-mfg-date').val(),
+                    'exp_date': $('#edit-exp-date').val(),
+                    'qty': $('#edit-qty').val(),
+                    'polybag_weight': $('#edit-polybag-weight').val(),
+                    'line_no': $('#edit-line-no').val(),
+                    'product_name': $('#edit-product-name').val()
+                };
+
+                $.ajax({
+                    url: '/update_production_order/',
+                    type: 'POST',
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    data: formData,
+                    success: function (response) {
+                        alert('Production Order updated successfully');
+                        $('#editProductionOrderModal').modal('hide');
+                        populateProductionOrderList();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error updating production order:', error);
+                    }
+                });
+            });
+
+            populateSelectItem();
+            populateSelectLineNo();
+            populateProductionOrderList();
+
+            var today = new Date();
+            var yyyy = today.getFullYear();
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var dd = String(today.getDate()).padStart(2, '0');
+
+            var currentDate = yyyy + '-' + mm + '-' + dd;
+
+            var tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            var yyyy_tomorrow = tomorrow.getFullYear();
+            var mm_tomorrow = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            var dd_tomorrow = String(tomorrow.getDate()).padStart(2, '0');
+
+            var nextDate = yyyy_tomorrow + '-' + mm_tomorrow + '-' + dd_tomorrow;
+
+            $('#mfg-date').attr('max', currentDate);
+            $('#exp-date').attr('min', nextDate);
+        });
+    </script>
+
+    <style>
+        .form-floating > .form-select:focus ~ label,
+        .form-floating > .form-select:not(:placeholder-shown) ~ label,
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label {
+            transform: translateY(-1.5rem) scale(0.85);
+            color: #000000;
+            opacity: 1;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single {
+            height: calc(3.5rem + 2px);
+            padding: .75rem 1rem;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 2.25rem;
+            font-size: 0.85rem;
+            color: black !important;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: calc(3.5rem + 2px);
+        }
+
+        .select2-selection__clear {
+            display: none;
+        }
+
+        .form-floating > label {
+            z-index: 1;
+            pointer-events: none;
+            left: 1rem;
+        }
+
+        .form-floating > .form-select,
+        .form-floating > .form-control {
+            z-index: 2;
+        }
+
+        .select2-selection__placeholder {
+            color: black !important;
+            font-size: 0.85rem;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('#select-item').select2({
+                placeholder: "Select Item Code",
+                allowClear: true,
+                dropdownParent: $('#productionOrderForm')
+            });
+        });
+    </script>
+{% endblock %}

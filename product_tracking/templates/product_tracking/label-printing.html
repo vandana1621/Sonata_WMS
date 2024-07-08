@@ -1,0 +1,580 @@
+{% include 'product_tracking/head.html' %}
+
+{% block content %}
+    <body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <!-- ========== App Menu ========== -->
+        {% include 'product_tracking/menu.html' %}
+        <!-- Left Sidebar End -->
+        <!-- Vertical Overlay-->
+        <div class="vertical-overlay"></div>
+        {% include 'product_tracking/header.html' %}
+        <div class="wrapper"></div>
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Label Printing</h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Production</a></li>
+                                        <li class="breadcrumb-item active">Label Printing</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Label Printing</h4>
+                                </div><!-- end card header -->
+                                <div class="card-body">
+                                    <form id="labelPrintingForm">
+                                        {% csrf_token %}
+                                        <div class="row g-3">
+                                            <div class="col-lg-3">
+                                                <div class="form-floating">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="labelType"
+                                                               id="polybag" value="polybag" checked>
+                                                        <label class="form-check-label" for="polybag">
+                                                            Polybag Label
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="labelType"
+                                                               id="carton" value="carton">
+                                                        <label class="form-check-label" for="carton">
+                                                            Carton Label
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3" id="scan-qr-code" style="display: none;">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="qr-code"
+                                                           placeholder="Scan QR Code" name="qr_code">
+                                                    <label for="qr-code">Scan QR Code</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3" id="print-button"
+                                                 style="display: none; margin-top: 25px;">
+                                                <button type="button" id="printCartonLabel" class="btn btn-primary">
+                                                    Print Carton Label
+                                                </button>
+                                            </div>
+
+                                            <div class="col-lg-3" id="polybag-count"
+                                                 style="display: none; margin-top: 25px;">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="polybag-count-input"
+                                                           placeholder="Polybag Count" readonly>
+                                                    <label for="polybag-count-input">Polybag Count</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="select-production-order"
+                                                            aria-label="Select PO Number">
+                                                        <!-- Options will be added dynamically -->
+                                                    </select>
+                                                    <label for="select-production-order">Production Order Number</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="item-code"
+                                                           placeholder="Enter Item Code" readonly>
+                                                    <label for="item-code">Item Code</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input class="form-control" id="product-name"
+                                                           placeholder="Enter Item Name" readonly>
+                                                    <label for="product-name">Item Name</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="batch"
+                                                           placeholder="Enter Batch" readonly>
+                                                    <label for="batch">Item Batch</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="mrp"
+                                                           placeholder="Enter MRP" readonly>
+                                                    <label for="mrp">Item MRP</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input type="date" class="form-control" id="mfg-date" readonly>
+                                                    <label for="mfg-date">MFG Date</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input type="date" class="form-control" id="exp-date" readonly>
+                                                    <label for="exp-date">EXP. Date</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 polybag-fields">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="qty"
+                                                           placeholder="Enter Quantity" readonly>
+                                                    <label for="qty">Quantity</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="text-end">
+                                                    <div class="text-end">
+                                                        <button type="button" class="btn btn-primary"
+                                                                id="print-label-btn">Print
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <!-- Table to display carton labels -->
+                                    <div id="cartonLabelsContainer" style="display: none;">
+                                        <table id="cartonLabelsTable"
+                                               class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                                               style="width:100%">
+                                            <thead style="background: rgba(155,198,221,0.58)">
+                                            <tr>
+                                                <th>Carton Label</th>
+                                                <th>Item Code</th>
+                                                <th>Batch</th>
+                                                <th>Printed By</th>
+                                                <th>Printed Date</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <!-- Data will be inserted here by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--end col-->
+                    </div><!--end row-->
+                </div> <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            {% include 'product_tracking/footer.html' %}
+        </div>
+        <!-- end main content-->
+    </div>
+    <!-- END layout-wrapper -->
+
+    <!-- CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        .form-floating > .form-select:focus ~ label,
+        .form-floating > .form-select:not(:placeholder-shown) ~ label,
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label {
+            transform: translateY(-1.5rem) scale(0.85);
+            color: #000000;
+            opacity: 1;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single {
+            height: calc(3.5rem + 2px); /* Adjust based on form control height */
+            padding: .75rem 1rem;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 2.25rem; /* Adjust based on form control height */
+            font-size: 0.85rem; /* Adjust the font size as needed */
+            color: black !important;
+        }
+
+        .form-floating > .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: calc(3.5rem + 2px); /* Adjust based on form control height */
+        }
+
+        .select2-selection__clear {
+            display: none; /* Hide the clear (red cross) button */
+        }
+
+        /* Ensure the label stays within the div */
+        .form-floating > label {
+            z-index: 1;
+            pointer-events: none;
+            left: 1rem;
+        }
+
+        .form-floating > .form-select,
+        .form-floating > .form-control {
+            z-index: 2;
+        }
+
+        .select2-selection__placeholder {
+            color: black !important;
+            font-size: 0.85rem;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2 for the production order dropdown
+            $('#select-production-order').select2({
+                width: '100%',
+                allowClear: true,
+                placeholder: 'Select PO number'
+            });
+
+            // Function to get CSRF token from cookie
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            // Fetch production order numbers and populate the dropdown
+            $.ajax({
+                url: '/get_production_order_numbers_by_line/',
+                type: 'GET',
+                success: function (data) {
+                    var productionOrderSelect = $('#select-production-order');
+                    productionOrderSelect.empty(); // Clear existing options
+                    productionOrderSelect.append('<option></option>'); // Allow for the placeholder
+
+                    data.forEach(function (order) {
+                        if (!order.polybag_print_status) { // Only add orders that are not completed
+                            productionOrderSelect.append(new Option(order.production_order_no, order.production_order_no));
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching production order numbers:', error);
+                }
+            });
+
+            // Fetch product details based on selected production order number
+            $('#select-production-order').change(function () {
+                var productionOrderNo = $(this).val();
+                if (productionOrderNo) {
+                    $.ajax({
+                        url: '/get_product_details_by_order/' + productionOrderNo + '/',
+                        type: 'GET',
+                        success: function (data) {
+                            $('#item-code').val(data.item_code);
+                            $('#product-name').val(data.item_name);
+                            $('#batch').val(data.batch);
+                            $('#mrp').val(data.mrp);
+                            $('#mfg-date').val(data.mfg_date);
+                            $('#exp-date').val(data.exp_date);
+                            $('#qty').val(data.qty);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching product details:', error);
+                        }
+                    });
+                } else {
+                    $('#item-code').val('');
+                    $('#product-name').val('');
+                    $('#batch').val('');
+                    $('#mrp').val('');
+                    $('#mfg-date').val('');
+                    $('#exp-date').val('');
+                    $('#qty').val('');
+                }
+            });
+
+            $('#print-label-btn').click(function () {
+                var productionOrderNo = $('#select-production-order').val();
+                if (!productionOrderNo) {
+                    alert('Please select a Production Order Number.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/get_weight/',
+                    type: 'POST',
+                    data: {
+                        production_order_no: productionOrderNo,
+                        csrfmiddlewaretoken: csrftoken
+                    },
+                    success: function (data) {
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+
+                        var weight = parseFloat(data.weight);
+                        console.log("Weight received:", weight);
+
+                        var batch = $('#batch').val();
+                        var itemCode = $('#item-code').val();
+                        var itemName = $('#product-name').val();
+                        var mrp = $('#mrp').val();
+                        var expDate = $('#exp-date').val();
+                        var qty = $('#qty').val();
+
+                        // Construct current month and year in MMYY format
+                        var currentDate = new Date();
+                        var currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(-2); // Ensure two digits
+                        var currentYear = currentDate.getFullYear().toString().slice(-2);  // Last two digits of the year
+                        var currentMonthYear = currentMonth + currentYear;
+
+                        // Assume serial_number_counter is available and increment it
+                        var serialNumberCounter = 1;  // This should be managed in your application context
+                        var qrCode = `P${itemCode}${currentMonthYear}${batch}${("0000" + serialNumberCounter).slice(-4)}`;
+
+                        $.ajax({
+                            url: '/generate_prn/',
+                            type: 'POST',
+                            data: {
+                                batch: batch,
+                                item_code: itemCode,
+                                item_name: itemName,
+                                mrp: mrp,
+                                exp_date: expDate,
+                                weight: weight,
+                                qty: qty,
+                                qr_code: qrCode,
+                                production_order_no: productionOrderNo,  // Send production order number
+                                csrfmiddlewaretoken: csrftoken
+                            },
+                            success: function (data) {
+                                if (data.status === 'success') {
+                                    alert(data.num_prints + ' Label Printed Successfully!!');
+                                    location.reload()
+
+                                    // Clear dropdown and form fields
+                                    $('#select-production-order').val('').trigger('change');
+                                    $('#item-code').val('');
+                                    $('#product-name').val('');
+                                    $('#batch').val('');
+                                    $('#mrp').val('');
+                                    $('#mfg-date').val('');
+                                    $('#exp-date').val('');
+                                    $('#qty').val('');
+                                } else {
+                                    alert('Error: ' + data.message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                var response = xhr.responseJSON;
+                                if (response && response.message) {
+                                    alert('Error: ' + response.message);
+                                } else {
+                                    alert('An unexpected error occurred.');
+                                }
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        var response = xhr.responseJSON;
+                        if (response && response.message) {
+                            alert('Error: ' + response.message);
+                        } else {
+                            alert('An unexpected error occurred.');
+                        }
+                    }
+                });
+            });
+
+            function fetchCartonLabels() {
+                $.ajax({
+                    url: '/get_single_carton_list/', // URL to fetch the carton labels
+                    type: 'GET',
+                    success: function (data) {
+                        var tableBody = $('#cartonLabelsTable tbody');
+                        tableBody.empty(); // Clear the table body
+
+                        // Loop through the data and append rows to the table body
+                        data.forEach(function (label) {
+                            var row = '<tr>' +
+                                '<td>' + label.qr_code + '</td>' +
+                                '<td>' + label.item_code + '</td>' +
+                                '<td>' + label.batch + '</td>' +
+                                '<td>' + label.printed_by + '</td>' +
+                                '<td>' + label.printed_date + '</td>' +
+                                '</tr>';
+                            tableBody.append(row);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            }
+
+            function fetchPolybagCount(item_code, batch) {
+                $.ajax({
+                    url: '/get_polybag_count/', // URL to fetch the polybag count
+                    type: 'GET',
+                    data: {
+                        item_code: item_code,
+                        batch: batch
+                    },
+                    success: function (response) {
+                        if (response.polybag_count !== undefined) {
+                            $('#polybag-count-input').val(response.polybag_count);
+                            $('#polybag-count').show();
+                        } else {
+                            $('#polybag-count').hide();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            }
+
+            // Show/Hide form fields based on selected label type
+            $('input[name="labelType"]').change(function () {
+                if ($('#carton').is(':checked')) {
+                    $('.polybag-fields').hide();
+                    $('#carton-options').show(); // You can hide this if not needed
+                    $('#scan-qr-code').show();
+                    $('#scan-qr-code-bulk').hide();
+                    $('#print-label-btn').hide();
+                    $('#print-button').show();
+                    $('#print-button-bulk').hide();
+                    $('#cartonLabelsContainer').show();
+                    fetchCartonLabels(); // Fetch carton labels when carton is selected
+                } else {
+                    $('#carton-options').hide();
+                    $('.polybag-fields').show();
+                    $('#scan-qr-code').hide();
+                    $('#scan-qr-code-bulk').hide();
+                    $('#print-label-btn').show();
+                    $('#print-button').hide();
+                    $('#print-button-bulk').hide();
+                    $('#cartonLabelsContainer').hide(); // Hide table when carton type is not selected
+                }
+            });
+
+            // Event handler for printing single carton label
+            $('#printCartonLabel').click(function () {
+                var qr_code = $('#qr-code').val();
+
+                $.ajax({
+                    url: '/generate_carton/',
+                    type: 'POST',
+                    data: {
+                        qr_code: qr_code,
+                        carton_type: 'single',
+                        csrfmiddlewaretoken: csrftoken
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert('Carton Label Printed Successfully');
+                            fetchCartonLabels(); // Refresh the carton labels table
+                            $('#qr-code').val(''); // Clear the input field after printing
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var response = xhr.responseJSON;
+                        if (response && response.message) {
+                            alert('Error: ' + response.message);
+                        } else {
+                            alert('An unexpected error occurred.');
+                        }
+                    }
+                });
+            });
+
+            // Event handler for printing bulk carton label
+            $('#printCartonLabelBulk').click(function () {
+                var qr_code_bulk = $('#qr-code-bulk').val();
+
+                $.ajax({
+                    url: '/generate_carton/',
+                    type: 'POST',
+                    data: {
+                        qr_code: qr_code_bulk,
+                        carton_type: 'bulk',
+                        csrfmiddlewaretoken: csrftoken
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert('Bulk Carton Label Printed Successfully');
+                            fetchCartonLabels(); // Refresh the carton labels table
+                            $('#qr-code-bulk').val(''); // Clear the input field after printing
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+
+            $('#carton-labels-nav').click(function () {
+                $('#bulk-carton').prop('checked', true);
+                $('.polybag-fields').hide();
+                $('#carton-options').hide();
+                $('#scan-qr-code').hide();
+                $('#scan-qr-code-bulk').show();
+                $('#print-label-btn').hide();
+                $('#print-button').hide();
+                $('#print-button-bulk').show();
+                $('#cartonLabelsContainer').show();
+                fetchCartonLabels();
+            });
+
+        });
+    </script>
+
+    </body>
+{% endblock %}

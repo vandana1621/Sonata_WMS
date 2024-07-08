@@ -1,0 +1,267 @@
+{% include 'product_tracking/head.html' %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        $('#scan-product').on('input', function () {
+            let inputValue = $(this).val();
+
+            if (inputValue) {
+                $.ajax({
+                    url: '/get_batch_data_for_qc/',
+                    method: 'GET',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    data: {
+                        'scan_product': inputValue
+                    },
+                    success: function (response) {
+                        console.log('AJAX Success:', response);
+
+                        let tableBody = $('#batch-table tbody');
+                        tableBody.empty();
+                        console.log('Response:', response);
+                        console.log('Batch Data:', response.batch_data);
+
+                        if (response.batch_data && response.batch_data.length > 0) {
+                            response.batch_data.forEach(function (item) {
+                                let actionContent = '';
+
+                                if (item.qc_flag) {
+                                    actionContent = '<span class="badge bg-success">Approved</span>';
+                                } else if (item.qc_remark !== null) {
+                                    actionContent = '<span class="badge bg-danger">Rejected</span>';
+                                } else {
+                                    actionContent = `
+                                        <button class="btn btn-sm btn-primary edit-btn"><i class="fa fa-pencil"></i> Approve</button>
+                                        <button class="btn btn-sm btn-danger delete-btn"><i class="fa fa-trash"></i> Reject</button>
+                                    `;
+                                }
+                                console.log('qc_flag:', item.qc_flag);
+                                console.log('qc_remark:', item.qc_remark);
+
+                                let row = `
+                                    <tr>
+                                        <td class="qr_code">${item.qr_code}</td>
+                                        <td>${item.po_no}</td>
+                                        <td class="item_batch">${item.batch}</td>
+                                        <td class="item_code">${item.item_code}</td>
+                                        <td class="action-buttons">${actionContent}</td>
+                                    </tr>
+                                `;
+                                tableBody.append(row);
+                            });
+                        } else {
+                            tableBody.append('<tr><td colspan="5">No data found</td></tr>');
+                        }
+                    },
+                    error: function (error) {
+                        console.log('AJAX Error:', error);
+                    }
+                });
+            }
+        });
+
+        // Approve button click handler
+        $('#batch-table').on('click', '.edit-btn', function () {
+            let qrCode = $(this).closest('tr').find('.qr_code').text();
+            let actionButtons = $(this).closest('td.action-buttons');
+
+            $.ajax({
+                url: '/approve_qc/',
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                    'qr_code': qrCode
+                },
+                success: function (response) {
+                    console.log('Approve Success:', response);
+                    actionButtons.empty().append('<span class="badge bg-success">Approved</span>');
+                },
+                error: function (error) {
+                    console.log('Approve Error:', error);
+                }
+            });
+        });
+
+        // Reject button click handler
+        $('#batch-table').on('click', '.delete-btn', function () {
+            let qrCode = $(this).closest('tr').find('.qr_code').text();
+            $('#rejectModal').modal('show');
+
+            $('#submitReject').off('click').on('click', function () {
+                let remark = $('#rejectRemark').val();
+                $('#rejectModal').modal('hide');
+
+                $.ajax({
+                    url: '/reject_qc/',
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    data: {
+                        'qr_code': qrCode,
+                        'remark': remark
+                    },
+                    success: function (response) {
+                        console.log('Reject Success:', response);
+                        let actionButtons = $('#batch-table').find(`.qr_code:contains(${qrCode})`).closest('tr').find('.action-buttons');
+                        actionButtons.empty().append('<span class="badge bg-danger">Rejected</span>');
+                    },
+                    error: function (error) {
+                        console.log('Reject Error:', error);
+                    }
+                });
+            });
+        });
+    });
+</script>
+<body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <!-- ========== App Menu ========== -->
+        {% include 'product_tracking/menu.html' %}
+        <!-- Left Sidebar End -->
+        <!-- Vertical Overlay-->
+        <div class="vertical-overlay"></div>
+        {% include 'product_tracking/header.html' %}
+        <div class="wrapper"></div>
+
+        <!-- Start right Content here -->
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Quality Control</h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Production</a></li>
+                                        <li class="breadcrumb-item active">Quality Control</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <!-- Scan product input form -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header" style="margin-bottom: 10px;">
+                                    <h4 class="card-title mb-0">Quality Control</h4>
+                                </div>
+                                <form id="qc-form" action="#" method="post">
+                                    {% csrf_token %}
+                                    <div class="row g-3">
+                                        <div class="col-lg-3" style="margin-left: 17px;">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="scan-product" placeholder="Scan Product">
+                                                <label for="scan-product">Scan Product</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batch data table -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body mt-3">
+                                    <div class="table-responsive">
+                                        <table id="batch-table" class="table table-bordered dt-responsive nowrap table-striped align-middle" style="width:100%">
+                                            <thead style="background: rgba(155,198,221,0.58)">
+                                                <tr>
+                                                    <th>QR Code</th>
+                                                    <th>Production Order Number</th>
+                                                    <th>Item Batch</th>
+                                                    <th>Item Code</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Rows will be populated dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal for rejection remarks -->
+                    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="rejectModalLabel">Reject QC</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="rejectRemark">Rejection Remarks</label>
+                                            <textarea class="form-control" id="rejectRemark" rows="3"></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" id="submitReject" class="btn btn-danger">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end col -->
+            </div><!-- end row -->
+        </div> <!-- container-fluid -->
+    </div>
+    <!-- End Page-content -->
+
+    {% include 'product_tracking/footer.html' %}
+</div>
+<!-- end main content-->
+
+</div>
+<!-- END layout-wrapper -->
+
+<!--start back-to-top-->
+<button class="btn btn-dark btn-icon" id="back-to-top">
+    <i class="bi bi-caret-up fs-3xl"></i>
+</button>
+<!--end back-to-top-->
+
+<!--preloader-->
+<div id="preloader">
+    <div id="status">
+        <div class="spinner-border text-primary avatar-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% include 'product_tracking/head.html' %}
+
+{% block content %}
+
+    <body>
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+
+            <!-- ========== App Menu ========== -->
+{% include 'product_tracking/menu.html' %}
+<!-- Left Sidebar End -->
+<!-- Vertical Overlay-->
+<div class="vertical-overlay"></div>
+            {% include 'product_tracking/header.html' %}
+            <div class="wrapper"></div>
+
+
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+
+                <div class="page-content">
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                    <h4 class="mb-sm-0">Stock Verification Request Generation</h4>
+
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Production</a></li>
+                                            <li class="breadcrumb-item active">Stock Verification Request Generation</li>
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title mb-0">Stock Verification Request Generation</h4>
+                                    </div><!-- end card header -->
+                                    <div class="card-body">
+
+                                        <form action="#">
+                                            <div class="row g-3">
+                                                 <div class="col-lg-3">
+                                                    <div class="form-floating">
+                                                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                                                            <option selected>Select Storage Location</option>
+                                                            <option value="1">L1</option>
+                                                            <option value="2">L2</option>
+                                                            <option value="3">L3</option>
+                                                            <option value="4">L4</option>
+                                                            <option value="5">L5</option>
+
+                                                        </select>
+                                                        <label for="floatingSelect">Storage Location</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="text-end">
+                                                        <button type="submit" class="btn btn-primary">Generate Request</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                            </div>
+                                </div>
+
+
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+                        </div><!--end row-->
+                      <div class="row" id="invoiceList">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row align-items-center g-2">
+                                        <div class="col-xl-2 col-md-3">
+                                            <div class="search-box">
+                                                <label>
+                                                    <input type="text" class="form-control search" placeholder="Search something...">
+                                                </label>
+                                                <i class="ri-search-line search-icon"></i>
+                                            </div>
+                                        </div><!--end col-->
+
+
+                                    </div><!--end row-->
+                                </div>
+                                <div class="card-body mt-3">
+                                    <div class="table-responsive table-card">
+                                        <table class="table table-centered align-middle table-custom-effect table-nowrap mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="checkAll">
+                                                            <label class="form-check-label" for="checkAll"></label>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="invoice_id">Product QR Code</th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="invoice_id">Product Name</th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="customer_name">Product Description</th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="email"> Product Batch</th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="create_date">Product MRP</th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="create_date">MFG. Date</th>
+                                                    <th scope="col" class="sort cursor-pointer" data-sort="create_date">EXP. Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all">
+                                                    
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                                                                </label>
+                                                            </div>
+                                                        </th>
+                                                        <td class="id" style="display:none;"><a href="javascript:void(0);" class="fw-medium link-primary">#VZ2101</a></td>
+                                                        <td class="customer_name">PFQL0424ABC123001</td>
+                                                        <td class="customer_name">XYZ</td>
+                                                        <td class="email">ABC-1234567</td>
+                                                        <td class="phone">XYZ123</td>
+                                                        <td class="phone">250.00</td>
+                                                        <td class="date">06 Apr, 2021</td>
+                                                        <td class="date">06 Apr, 2023</td>
+                                                    </tr>
+                                                </tbody><!-- end tbody -->
+                                        </table><!-- end table -->
+                                        <div class="noresult" style="display: none">
+                                            <div class="text-center py-4">
+                                                <i class="ph-magnifying-glass fs-1 text-primary"></i>
+                                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                <p class="text-muted mb-0">We've searched more than 6+ invoice We did not find any invoice for you search.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center mt-4 pt-3" id="pagination-element">
+                                        <div class="col-sm">
+                                            <div class="text-muted text-center text-sm-start">
+                                                Showing <span class="fw-semibold">10</span> of <span class="fw-semibold">15</span> Results
+                                            </div>
+                                        </div><!--end col-->
+                                        <div class="col-sm-auto mt-3 mt-sm-0">
+                                            <div class="pagination-wrap hstack justify-content-center gap-2">
+                                                <a class="page-item pagination-prev disabled" href="#">
+                                                    Previous
+                                                </a>
+                                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                                <a class="page-item pagination-next" href="#">
+                                                    Next
+                                                </a>
+                                            </div>
+                                        </div><!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
+                        </div><!--end col-->
+                    </div>
+
+                    </div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+
+
+                {% include 'product_tracking/footer.html' %}
+            </div>
+            <!-- end main content-->
+
+        </div>
+        <!-- END layout-wrapper -->
+
+        
+
+
+
+        <!--start back-to-top-->
+        <button class="btn btn-dark btn-icon" id="back-to-top">
+            <i class="bi bi-caret-up fs-3xl"></i>
+        </button>
+        <!--end back-to-top-->
+
+        <!--preloader-->
+        <div id="preloader">
+            <div id="status">
+                <div class="spinner-border text-primary avatar-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock %}

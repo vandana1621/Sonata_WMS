@@ -1,0 +1,552 @@
+{% include 'product_tracking/head.html' %}
+
+{% block content %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            function populateProductionLines() {
+                $.ajax({
+                    url: '{% url "product_tracking:get_production_lines" %}',
+                    type: 'GET',
+                    success: function (response) {
+                        var productionLineDropdown = $('#production_line');
+                        productionLineDropdown.empty();
+                        productionLineDropdown.append('<option value="">Select Production Line</option>');
+                        response.production_lines.forEach(function (line) {
+                            productionLineDropdown.append('<option value="' + line + '">' + line + '</option>');
+                        });
+
+                        var newProductionLineDropdown = $('#new_line_no');
+                        newProductionLineDropdown.empty();
+                        newProductionLineDropdown.append('<option value="">Select Production Line</option>');
+                        response.production_lines.forEach(function (line) {
+                            newProductionLineDropdown.append('<option value="' + line + '">' + line + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred while fetching production lines. Please try again later.');
+                    }
+                });
+            }
+
+            $('#mouldForm').on('submit', function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Mould added successfully!');
+                            fetchMouldList();
+                            $('#mouldForm')[0].reset();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again later.');
+                    }
+                });
+            });
+
+            function fetchMouldList() {
+                $.ajax({
+                    url: '{% url "product_tracking:get_mould_list" %}',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            var mouldTableBody = $('#mouldTable tbody');
+                            mouldTableBody.empty();
+                            response.tolerance.forEach(function (mould) {
+                                mouldTableBody.append(
+                                    '<tr>' +
+                                    '<td>' + mould.mould_weight + '</td>' +
+                                    '<td>' + mould.created_by + '</td>' +
+                                    '<td>' + mould.created_date + '</td>' +
+                                    '<td>' + (mould.status ? 'Active' : 'Inactive') + '</td>' +
+                                    '<td>' + mould.line_no + '</td>' +
+                                    '<td>' +
+                                    '<button class="btn btn-sm btn-primary edit-mould" data-id="' + mould.mould_id + '">Edit</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                                );
+                            });
+                            if (response.is_empty) {
+                                $('#addMouldButton').hide();
+                            } else {
+                                $('#addMouldButton').show();
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred while fetching the mould list. Please try again later.');
+                    }
+                });
+            }
+
+            $(document).on('click', '.edit-mould', function () {
+                var mouldId = $(this).data('id');
+                $.ajax({
+                    url: '{% url "product_tracking:get_mould_list" %}',
+                    type: 'GET',
+                    success: function (response) {
+                        var mould = response.tolerance.find(m => m.mould_id === mouldId);
+                        if (mould) {
+                            $('#edit_mould_id').val(mould.mould_id);
+                            $('#new_mould_weight').val(mould.mould_weight.split(' ')[0]);
+                            $('#new_mould_unit').val(mould.mould_weight.split(' ')[1]);
+                            $('#new_line_no').val(mould.line_no);
+                            $('#editMouldModal').modal('show');
+                        } else {
+                            alert('Mould not found.');
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred while fetching the mould details. Please try again later.');
+                    }
+                });
+            });
+
+            $('#editMouldForm').on('submit', function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Mould updated successfully!');
+                            fetchMouldList();
+                            $('#editMouldModal').modal('hide');
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again later.');
+                    }
+                });
+            });
+            $('#cancelMouldButton').on('click', function () {
+                $('#editMouldModal').modal('hide');
+            });
+
+            $('#toleranceForm').on('submit', function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Tolerance added successfully!');
+                            fetchTolerance();
+                            $('#toleranceForm')[0].reset();
+                            if (!response.is_empty) {
+                                $('#addButton').hide();
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again later.');
+                    }
+                });
+            });
+
+            $(document).on('click', '.edit-btn', function () {
+                var row = $(this).closest('tr');
+                var toleranceId = row.data('id');
+                var toleranceLower = row.find('td').eq(0).text();
+                var toleranceUpper = row.find('td').eq(1).text();
+
+                var toleranceParts1 = toleranceLower.split(' ');
+                var toleranceParts2 = toleranceUpper.split(' ');
+                var toleranceValue1 = toleranceParts1[0];
+                var toleranceValue2 = toleranceParts2[0];
+                var unit = toleranceParts1[1];
+
+                $('#edit_tolerance_id').val(toleranceId);
+                $('#new_lower_tolerance').val(toleranceValue1);
+                $('#new_upper_tolerance').val(toleranceValue2);
+                $('#new_unit').val(unit);
+
+                $('#editModal').modal('show');
+            });
+
+            $('#cancelButton').on('click', function () {
+                $('#editModal').modal('hide');
+            });
+
+            $('#editToleranceForm').on('submit', function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Tolerance updated successfully!');
+                            fetchTolerance();
+                            $('#editModal').modal('hide');
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again later.');
+                    }
+                });
+            });
+
+            function fetchTolerance() {
+                $.ajax({
+                    url: "{% url 'product_tracking:get_tolerance_list' %}",
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            var tbody = $('#toleranceTable tbody');
+                            tbody.empty();
+                            response.tolerance.forEach(function (tl) {
+                                tbody.append(
+                                    '<tr data-id="' + tl.tl_id + '">' +
+                                    '<td>' + tl.lower_tolerance + '</td>' +
+                                    '<td>' + tl.upper_tolerance + '</td>' +
+                                    '<td>' + tl.created_by + '</td>' +
+                                    '<td>' + tl.created_date + '</td>' +
+                                    '<td>' + (tl.status ? 'Active' : 'Inactive') + '</td>' +
+                                    '<td><button class="btn btn-sm btn-primary edit-btn me-2"><i class="fa fa-pencil"></i>Edit</button></td>' +
+                                    '</tr>'
+                                );
+                            });
+                            if (!response.is_empty) {
+                                $('#addButton').hide();
+                            } else {
+                                $('#addButton').show();
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again later.');
+                    }
+                });
+            }
+
+            // Fetch data on page load
+            populateProductionLines();
+            fetchMouldList();
+            fetchTolerance();
+        });
+    </script>
+
+    <body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <!-- ========== App Menu ========== -->
+        {% include 'product_tracking/menu.html' %}
+        <!-- Left Sidebar End -->
+        <!-- Vertical Overlay-->
+        <div class="vertical-overlay"></div>
+        {% include 'product_tracking/header.html' %}
+        <div class="wrapper"></div>
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Tolerance Master</h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Master Management</a>
+                                        </li>
+                                        <li class="breadcrumb-item active">Tolerance Master</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <!-- Tolerance Section -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Add Tolerance</h4>
+                                    <form id="toleranceForm" action="{% url 'product_tracking:add_tolerance' %}"
+                                          method="post">
+                                        {% csrf_token %}
+                                        <div class="row g-3">
+                                            <div class="col-lg-12">
+                                                <div class="form-floating" style="margin-top: 10px;">
+                                                    <input type="number" name="lower_tolerance" class="form-control"
+                                                           id="lower_tolerance"
+                                                           placeholder="Enter the Tolerance Value" required>
+                                                    <label for="lower_tolerance">Lower Tolerance<span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                                <div class="form-floating" style="margin-top: 10px;">
+                                                    <input type="number" name="upper_tolerance" class="form-control"
+                                                           id="upper_tolerance"
+                                                           placeholder="Enter the Tolerance Value" required>
+                                                    <label for="upper_tolerance">Upper Tolerance<span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                                <div class="form-floating" style="margin-top: 10px;">
+                                                    <select name="unit" class="form-select" id="unit" required>
+                                                        <option value="">Select Unit</option>
+                                                        <option value="gm">gm</option>
+                                                        <option value="kg">kg</option>
+                                                    </select>
+                                                    <label for="unit">Unit<span class="text-danger">*</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" id="addButton" class="btn btn-primary"
+                                                style="margin-top: 15px;">Add
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="card-body">
+                                    <h4>Tolerance List</h4>
+                                    <div class="table-responsive">
+                                        <table id="toleranceTable"
+                                               class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                                               style="width:100%">
+                                            <thead style="background: rgba(155,198,221,0.58)">
+                                            <tr>
+                                                <th>Lower Tolerance</th>
+                                                <th>Upper Tolerance</th>
+                                                <th>Created By</th>
+                                                <th>Created Date</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <!-- Data will be appended here by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mould Section -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Add Mould</h4>
+                                    <form id="mouldForm" action="{% url 'product_tracking:add_mould' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="row g-3">
+                                            <div class="col-lg-12">
+                                                <div class="form-floating" style="margin-top: 10px;">
+                                                    <input type="text" name="mould_weight" class="form-control"
+                                                           id="mould_weight"
+                                                           placeholder="Enter the Mould Weight" required>
+                                                    <label for="mould_weight">Mould Weight<span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                                <div class="form-floating" style="margin-top: 10px;">
+                                                    <input type="text" name="mould_unit" class="form-control"
+                                                           id="mould_unit" value="kg" readonly>
+                                                    <label for="mould_unit">Mould Unit<span class="text-danger">*</span></label>
+                                                </div>
+                                                <div class="form-floating" style="margin-top: 10px;">
+                                                    <select name="production_line" class="form-control"
+                                                            id="production_line" required>
+                                                        <option value="">Select Production Line</option>
+                                                    </select>
+                                                    <label for="production_line">Production Line<span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" id="addMouldButton" class="btn btn-primary"
+                                                style="margin-top: 15px;">Add
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="card-body">
+                                    <h4>Mould List</h4>
+                                    <div class="table-responsive">
+                                        <table id="mouldTable"
+                                               class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                                               style="width:100%">
+                                            <thead style="background: rgba(155,198,221,0.58)">
+                                            <tr>
+                                                <th>Mould</th>
+                                                <th>Created By</th>
+                                                <th>Created Date</th>
+                                                <th>Status</th>
+                                                <th>Production Line</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <!-- Rows will be populated here by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Tolerance Modal -->
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Edit Tolerance</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editToleranceForm" action="{% url 'product_tracking:update_tolerance' %}"
+                                          method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="edit_tolerance_id" name="tolerance_id">
+                                        <div class="form-group">
+                                            <label for="new_lower_tolerance">New Lower Tolerance:</label>
+                                            <input type="text" id="new_lower_tolerance" name="new_lower_tolerance"
+                                                   class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new_upper_tolerance">New Upper Tolerance:</label>
+                                            <input type="text" id="new_upper_tolerance" name="new_upper_tolerance"
+                                                   class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new_unit">New Unit:</label>
+                                            <select id="new_unit" name="new_unit" class="form-control">
+                                                <option value="">Select New Unit</option>
+                                                <option value="gm">gm</option>
+                                                <option value="kg">kg</option>
+                                            </select>
+                                        </div>
+                                        <div style="margin-top:20px;">
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                    id="cancelButton">Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Edit Mould Modal -->
+                    <div class="modal fade" id="editMouldModal" tabindex="-1" role="dialog"
+                         aria-labelledby="editMouldModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editMouldModalLabel">Edit Mould</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editMouldForm" action="{% url 'product_tracking:update_mould' %}"
+                                          method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="edit_mould_id" name="mould_id">
+                                        <div class="form-group">
+                                            <label for="new_mould_weight">New Mould Weight:</label>
+                                            <input type="text" id="new_mould_weight" name="new_mould_weight"
+                                                   class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new_mould_unit">New Unit:</label>
+                                            <input id="new_mould_unit" name="new_mould_unit" class="form-control"
+                                                   readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new_line_no">New Line Number:</label>
+                                            <select id="new_line_no" name="new_line_no" class="form-control" required>
+                                                <option value="">Select Production Line</option>
+                                            </select>
+                                        </div>
+                                        <div style="margin-top:20px;">
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                    id="cancelMouldButton">Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            {% include 'product_tracking/footer.html' %}
+        </div>
+        <!-- end main content-->
+        <!-- END layout-wrapper -->
+
+        <!-- Preloader -->
+        <div id="preloader">
+            <div id="status">
+                <div class="spinner-border text-primary avatar-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load jQuery first -->
+        <!-- Then load Select2 -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+        <!-- Load Bootstrap JS -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </div>
+{% endblock %}

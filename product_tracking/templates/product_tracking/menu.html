@@ -1,0 +1,283 @@
+{% load static %}
+
+
+<div class="app-menu navbar-menu">
+    <!-- LOGO -->
+    <div class="navbar-brand-box">
+        <a href="{% url 'product_tracking:index' %}" class="logo logo-dark">
+            <span class="logo-sm">
+               <img src="{% static 'product_tracking/assets/images/cropped-Sonata-updated-logo.png' %}" alt=""
+                    height="150" width="150">
+                <!--<p style="color: #FFFFFF; font-size: 26px">WMS</p>-->
+            </span>
+            <span class="logo-lg">
+              <img src="{% static 'product_tracking/assets/images/cropped-Sonata-updated-logo.png' %}" alt=""
+                   height="150" width="150">
+                <!--  <p style="color: #FFFFFF; font-size: 26px">WMS</p>-->
+            </span>
+        </a>
+        <a href="{% url 'product_tracking:index' %}" class="logo logo-light">
+            <span class="logo-sm">
+                 <img src="{% static 'product_tracking/assets/images/cropped-Sonata-updated-logo.png' %}" alt=""
+                      height="150" width="150">
+                <!-- <p style="color: #FFFFFF;font-size: 26px">WMS</p>-->
+            </span>
+            <span class="logo-lg">
+               <img src="{% static 'product_tracking/assets/images/cropped-Sonata-updated-logo.png' %}" alt=""
+                    height="150" width="150">
+                <!-- <p style="color: #FFFFFF;font-size: 26px">WMS</p>-->
+            </span>
+        </a>
+
+        <button type="button" class="btn btn-sm p-0 fs-3xl header-item float-end btn-vertical-sm-hover shadow-none"
+                id="vertical-hover">
+            <i class="ri-record-circle-line"></i>
+        </button>
+    </div>
+
+    <div id="scrollbar">
+        <div class="container-fluid">
+
+            <div id="two-column-menu">
+            </div>
+            <ul class="navbar-nav" id="navbar-nav">
+
+                <!--<li class="menu-title"><span data-key="t-menu">Menu</span></li>-->
+                <li class="nav-item">
+                    <a href="{% url 'product_tracking:index' %}" class="nav-link menu-link"> <i
+                            class="ti ti-brand-google-home"></i> <span data-key="t-analytics">Dashboard</span> </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link collapsed" href="#sidebarLayouts" data-bs-toggle="collapse"
+                       role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                        <i class="ti ti-layout-board"></i> <span data-key="t-layouts">Master Management</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarLayouts">
+                        <ul class="nav nav-sm flex-column">
+                            {% if 'Item Master' in request.session.modules %}
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:add_item' %}" class="nav-link menu-link"> <i
+                                            class="bi bi-file-text-fill"></i> <span
+                                            data-key="t-invoices">Item Master</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Item Master.'); return false;"
+                                       class="nav-link">Item Master</a>
+                                </li>
+                            {% endif %}
+                            {% if 'User Management' in request.session.modules %}
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:add_user' %}" class="nav-link menu-link"> <i
+                                            class="bi bi-person-square"></i> <span
+                                            data-key="t-authentication">User Master</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access User Master.'); return false;"
+                                       class="nav-link menu-link"><i
+                                            class="bi bi-person-square"></i> <span
+                                            data-key="t-authentication">User Master</span></a>
+                                </li>
+                            {% endif %}
+                            {% if 'Production Line Master' in request.session.modules %}
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:add_production_line' %}"
+                                       class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-grid-fill"></i> <span
+                                            data-key="t-authentication">Production Line Master</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Production Line Master.'); return false;"
+                                       class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-grid-fill"></i> <span
+                                            data-key="t-authentication">Production Line Master</span> </a>
+                                </li>
+                            {% endif %}
+                            {% if 'Tolerance Master' in request.session.modules %}
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:add_tolerance' %}" class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-percent"></i> <span
+                                            data-key="t-authentication">Tolerance Master</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Tolerance Master.'); return false;"
+                                       class="nav-link">Tolerance Master</a>
+                                </li>
+                            {% endif %}
+                            {% if 'Printer Master' in request.session.modules %}
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:add_printer' %}" class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-printer-fill"></i> <span
+                                            data-key="t-authentication">Printer Master</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Printer Master.'); return false;"
+                                       class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-printer-fill"></i> <span
+                                            data-key="t-authentication">Printer Master</span> </a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                </li>
+
+
+                <li class="nav-item">
+                    <a href="#sidebarInvoices" class="nav-link menu-link collapsed" data-bs-toggle="collapse"
+                       role="button" aria-expanded="false" aria-controls="sidebarInvoices">
+                        <i class="ti ti-file-invoice"></i> <span data-key="t-invoices">Production</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarInvoices">
+                        <ul class="nav nav-sm flex-column">
+                            {% if 'Production Order Creation' in request.session.modules %}
+
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:production_order' %}" class="nav-link menu-link">
+                                        <i
+                                                class="ri-profile-fill"></i> <span
+                                            data-key="t-authentication">PO Creation</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access PO Creation.'); return false;"
+                                       class="nav-link menu-link"> <i
+                                            class="ri-profile-fill"></i> <span
+                                            data-key="t-authentication">PO Creation</span> </a>
+                                </li>
+                            {% endif %}
+
+                            {% if 'Label Printing' in request.session.modules %}
+
+
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:label_printing' %}" class="nav-link menu-link"> <i
+                                            class="ri-qr-code-fill"></i> <span
+                                            data-key="t-authentication">Label Printing</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Label Printing.'); return false;"
+                                       class="nav-link menu-link"> <i
+                                            class="ri-qr-code-fill"></i> <span
+                                            data-key="t-authentication">Label Printing</span> </a>
+
+                                </li>
+                            {% endif %}
+
+                            {% if 'Label Reprinting' in request.session.modules %}
+
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:label_reprinting' %}" class="nav-link menu-link">
+                                        <i
+                                                class="ri-qr-scan-fill"></i> <span
+                                            data-key="t-authentication">Reprinting/Rework </span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Reprinting/Rework.'); return false;"
+                                       class="nav-link menu-link"> <i
+                                            class="ri-qr-scan-fill"></i> <span
+                                            data-key="t-authentication">Reprinting/Rework </span> </a>
+
+                                </li>
+                            {% endif %}
+
+                            {% if 'Quality Control' in request.session.modules %}
+
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:quality_control' %}" class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-clipboard2-check-fill"></i> <span
+                                            data-key="t-authentication">Quality Control</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Quality Control.'); return false;"
+                                       class="nav-link menu-link"> <i
+                                            class="bi bi-clipboard2-check-fill"></i> <span
+                                            data-key="t-authentication">Quality Control</span> </a>
+
+                                </li>
+                            {% endif %}
+
+                            {% if 'Short Closure' in request.session.modules %}
+
+                                <li class="nav-item">
+                                    <a href="{% url 'product_tracking:short_closure' %}" class="nav-link menu-link">
+                                        <i
+                                                class="bi bi-clipboard2-check-fill"></i> <span
+                                            data-key="t-authentication">Short Closure</span> </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a href="#"
+                                       onclick="alert('You do not have permission to access Quality Control.'); return false;"
+                                       class="nav-link menu-link"> <i
+                                            class="bi bi-clipboard2-check-fill"></i> <span
+                                            data-key="t-authentication">Short Closure</span> </a>
+
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link collapsed" href="#sidebarPages" data-bs-toggle="collapse" role="button"
+                       aria-expanded="false" aria-controls="sidebarPages">
+                        <i class="ti ti-brand-adobe"></i> <span data-key="t-pages">Stock</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarPages">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{% url 'product_tracking:stock_verification' %}" class="nav-link menu-link"> <i
+                                        class=" ri-task-fill"></i> <span data-key="t-authentication">Generate Stock Verification Request </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{% url 'product_tracking:stock_approval' %}" class="nav-link menu-link"> <i
+                                        class=" ri-book-read-fill"></i> <span
+                                        data-key="t-authentication">Stock Request Approval </span> </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </li>
+
+
+                <li class="menu-title"><i class="ti ti-dots"></i> <span data-key="t-components">Reports</span></li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link menu-link"> <i class="ri-file-paper-2-fill"></i> <span
+                            data-key="t-authentication">Reports  </span> </a>
+                </li>
+
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+
+    <div class="sidebar-background"></div>
+</div>
