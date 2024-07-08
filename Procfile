@@ -1,1 +1,1 @@
-web: gunicorn wms2.wsgi --log-file -
+web: gunicorn sonata0807.wsgi --log-file -
