@@ -1,1 +1,2 @@
-web: gunicorn sonata0807.wsgi --log-file -
+web: gunicorn Sonata_WMS_finale.wsgi --log-file -
+
